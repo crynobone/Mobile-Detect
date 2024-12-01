@@ -1394,8 +1394,8 @@ class MobileDetect
         try {
             $cacheKey = $this->createCacheKey("mobile");
             $cacheItem = $this->cache->get($cacheKey);
-            if (!is_null($cacheItem)) {
-                return $cacheItem->get();
+            if ($cacheItem !== null) {
+                return $cacheItem;
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1440,8 +1440,8 @@ class MobileDetect
         try {
             $cacheKey = $this->createCacheKey("tablet");
             $cacheItem = $this->cache->get($cacheKey);
-            if (!is_null($cacheItem)) {
-                return $cacheItem->get();
+            if ($cacheItem !== null) {
+                return $cacheItem;
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1509,8 +1509,8 @@ class MobileDetect
         try {
             $cacheKey = $this->createCacheKey($ruleName);
             $cacheItem = $this->cache->get($cacheKey);
-            if ($cacheItem) {
-                return $cacheItem->get();
+            if ($cacheItem !== null) {
+                return $cacheItem;
             }
 
             $result = $this->matchUserAgentWithRule($ruleName);
@@ -1693,7 +1693,7 @@ class MobileDetect
         $userAgentKey = $this->hasUserAgent() ? $this->userAgent : '';
         $httpHeadersKey = $this->hasHttpHeaders() ? static::flattenHeaders($this->httpHeaders) : '';
 
-        return base64_encode("$key:$userAgentKey:$httpHeadersKey");
+        return 'MobileDetect' . md5("$key:$userAgentKey:$httpHeadersKey");
     }
 
     public static function flattenHeaders(array $httpHeaders): string
