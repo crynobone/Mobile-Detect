@@ -25,6 +25,11 @@
             "matches": [
                 "ARM"
             ]
+        },
+        "Sec-CH-UA-Mobile": {
+            "matches": [
+                "?1"
+            ]
         }
     },
     "uaHttpHeaders": [
