@@ -1407,7 +1407,7 @@ class MobileDetect
             $cacheKey = $this->createCacheKey("mobile");
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem;
+                return $cacheItem->get($cacheKey);
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1453,7 +1453,7 @@ class MobileDetect
             $cacheKey = $this->createCacheKey("tablet");
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem;
+                return $cacheItem->get($cacheKey);
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1522,7 +1522,7 @@ class MobileDetect
             $cacheKey = $this->createCacheKey($ruleName);
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem;
+                return $cacheItem->get($cacheKey);
             }
 
             $result = $this->matchUserAgentWithRule($ruleName);
