@@ -338,6 +338,7 @@ class MobileDetect
         // Seen this on a HTC.
         'HTTP_UA_CPU'                  => ['matches' => ['ARM']],
         // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-CH-UA-Mobile
+        // "?1" means that the device wants a "mobile" experience.
         'Sec-CH-UA-Mobile'             => ['matches' => ['?1']],
     ];
 
