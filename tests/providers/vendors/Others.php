@@ -322,6 +322,7 @@ return [
         'Mozilla/5.0 (Linux; Android 8.1.0; ONEPLUS A5010 Build/OPM1.171019.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 Mobile Safari/537.36 [FB_IAB/Orca-Android;FBAV/164.0.0.24.95;]' => ['isMobile' => true, 'isTablet' => false],
         'Mozilla/5.0 (Linux; Android 7.1.1; ONEPLUS A3010) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.185 Safari/537.36' => ['isMobile' => true, 'isTablet' => false],
         'Mozilla/5.0 (Linux; Android 12; KB2003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Mobile Safari/537.36' => ['isMobile' => true, 'isTablet' => false],
+        'Mozilla/5.0 (Linux; Android 14; CPH2663) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36' => ['isMobile' => true, 'isTablet' => false],
     ],
 
     'Odys' => [
