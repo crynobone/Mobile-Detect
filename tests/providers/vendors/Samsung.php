@@ -292,5 +292,7 @@ return [
         "Mozilla/5.0 (Linux; Android 12; SM-T736B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" => ['isMobile' => true, 'isTablet' => true],
         "Mozilla/5.0 (Linux; Android 13; SM-T733 Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/110.0.5481.154 Safari/537.36" => ['isMobile' => true, 'isTablet' => true],
         "Mozilla/5.0 (Linux; Android 12; SM-X205) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36" => ['isMobile' => true, 'isTablet' => true],
+        "Mozilla/5.0 (Linux; Android 14; SM-T630) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" => ['isMobile' => true, 'isTablet' => true],
+        "Mozilla/5.0 (Linux; Android 14; SM-X300) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" => ['isMobile' => true, 'isTablet' => true],
     ],
 ];
