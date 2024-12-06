@@ -1705,7 +1705,13 @@ class MobileDetect
         $userAgentKey = $this->hasUserAgent() ? $this->userAgent : '';
         $httpHeadersKey = $this->hasHttpHeaders() ? static::flattenHeaders($this->httpHeaders) : '';
 
-        return 'MobileDetect' . md5("$key:$userAgentKey:$httpHeadersKey");
+        $cacheKey = "$key:$userAgentKey:$httpHeadersKey";
+
+        $cacheKeyUsing = $this->config['cacheKeyUsing'] ?? function (string $cacheKey) {
+            return base64_encode($cacheKey);
+        };
+
+        return call_user_func($cacheKeyUsing, $cacheKey);
     }
 
     public static function flattenHeaders(array $httpHeaders): string
