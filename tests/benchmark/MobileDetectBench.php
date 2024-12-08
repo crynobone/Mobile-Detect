@@ -124,4 +124,25 @@ final class MobileDetectBench
         $detect->setUserAgent('Mozilla/5.0 (Linux; Android 12; SM-X906C Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.119 Mobile Safari/537.36');
         $detect->isSamsungTablet();
     }
+
+    public function benchIsMobileCacheKeyFnBase64AgainstBestMatch(): void
+    {
+        $detect = new MobileDetect(null, ['cacheKeyFn' => 'base64_encode']);
+        $detect->setUserAgent('iPhone');
+        $detect->isMobile();
+    }
+
+    public function benchIsMobileCacheKeyFnSha1AgainstBestMatch(): void
+    {
+        $detect = new MobileDetect(null, ['cacheKeyFn' => 'sha1']);
+        $detect->setUserAgent('iPhone');
+        $detect->isMobile();
+    }
+
+    public function benchIsMobileCacheKeyFnCustomCryptFnAgainstBestMatch(): void
+    {
+        $detect = new MobileDetect(null, ['cacheKeyFn' => fn ($key) => crypt($key, 'bla')]);
+        $detect->setUserAgent('iPhone');
+        $detect->isMobile();
+    }
 }

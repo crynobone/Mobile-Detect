@@ -2,6 +2,8 @@
 
 namespace DetectionTests;
 
+use Detection\Cache\Cache;
+use Detection\Cache\CacheItem;
 use Detection\Exception\MobileDetectException;
 use Detection\MobileDetect;
 use PHPUnit\Framework\TestCase;
@@ -111,5 +113,55 @@ final class MobileDetectWithCacheTest extends TestCase
             "iOS:iPad; AppleWebKit/533.17.9 Version/5.0.2 Mobile/8C148 Safari/6533.18.5:",
             base64_decode($detect->getCache()->getKeys()[3])
         );
+    }
+
+    /**
+     * @throws MobileDetectException
+     */
+    public function testCustomCacheWithInvalidFnThrowsException()
+    {
+        $this->expectException(MobileDetectException::class);
+        $this->expectExceptionMessage('Cache problem in isMobile(): cacheKeyFn is not a function.');
+        $cache = new Cache();
+
+        $detect = new MobileDetect($cache, ['cacheKeyFn' => 'not a function']);
+        $detect->setUserAgent('iPad; AppleWebKit/533.17.9 Version/5.0.2 Mobile/8C148 Safari/6533.18.5');
+        $detect->isMobile();
+    }
+
+    public function testCustomCacheForConsecutiveCalls()
+    {
+        $cache = new Cache();
+
+        $detect = new MobileDetect($cache, ['cacheKeyFn' => fn ($key) => base64_encode($key)]);
+        $detect->setUserAgent('iPad; AppleWebKit/533.17.9 Version/5.0.2 Mobile/8C148 Safari/6533.18.5');
+
+        $detect->isMobile();
+        $this->assertCount(1, $cache->getKeys());
+
+        $detect->isMobile();
+        $this->assertCount(1, $cache->getKeys());
+    }
+
+    public function testGetCacheKeyIsUsedInConsecutiveCallsIfFoundIn()
+    {
+        $cache = $this->getMockBuilder(Cache::class)
+            ->onlyMethods(["get", "set"])
+            ->getMock();
+        $cache->method('get')->withAnyParameters()->willReturn(new CacheItem('name', 'value'));
+        $cache->method('set')->withAnyParameters()->willReturn(true);
+
+
+        $cache->expects($spy = $this->exactly(2))->method('get');
+        $cache->expects($spy = $this->never())->method('set');
+
+
+
+        $detect = new MobileDetect($cache);
+        $detect->setUserAgent('iPad; AppleWebKit/533.17.9 Version/5.0.2 Mobile/8C148 Safari/6533.18.5');
+
+        $detect->isMobile();
+        $detect->isMobile();
+
     }
 }

@@ -251,6 +251,8 @@ class MobileDetect
         // Maximum HTTP User-Agent value allowed.
         // @var int
         'maximumUserAgentLength' => 500,
+        // Function that creates the cache key. e.g. (base64, sha1, custom fn).
+        'cacheKeyFn' => 'base64_encode',
         // Cache TTL
         // @var null|int|\DateInterval
         'cacheTtl' => 86400,
@@ -1700,6 +1702,9 @@ class MobileDetect
         return $this->cache;
     }
 
+    /**
+     * @throws CacheException
+     */
     protected function createCacheKey(string $key): string
     {
         $userAgentKey = $this->hasUserAgent() ? $this->userAgent : '';
@@ -1707,11 +1712,13 @@ class MobileDetect
 
         $cacheKey = "$key:$userAgentKey:$httpHeadersKey";
 
-        $cacheKeyUsing = $this->config['cacheKeyUsing'] ?? function (string $cacheKey) {
-            return base64_encode($cacheKey);
-        };
+        $cacheKeyFn = $this->config['cacheKeyFn'];
 
-        return call_user_func($cacheKeyUsing, $cacheKey);
+        if (!is_callable($cacheKeyFn)) {
+            throw new CacheException('cacheKeyFn is not a function.');
+        }
+
+        return call_user_func($cacheKeyFn, $cacheKey);
     }
 
     public static function flattenHeaders(array $httpHeaders): string
