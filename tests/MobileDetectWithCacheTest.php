@@ -162,6 +162,5 @@ final class MobileDetectWithCacheTest extends TestCase
 
         $detect->isMobile();
         $detect->isMobile();
-
     }
 }
