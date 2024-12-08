@@ -1,9 +1,9 @@
 FROM composer:latest AS build
 WORKDIR /app
-COPY ./ .
+COPY . .
 COPY ./docker/build.sh .
 RUN pwd
-RUN ls -al
 # Make the script executable
+SHELL ["/bin/bash", "-c"]
 RUN chmod +x build.sh
 RUN ./build.sh
