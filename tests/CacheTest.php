@@ -57,17 +57,26 @@ final class CacheTest extends TestCase
     {
         $this->cache->set('isMobile', true, 0);
         $this->assertInstanceOf(CacheItem::class, $this->cache->get('isMobile'));
-        $this->assertEquals(0, $this->cache->get('isMobile')->getTtl());
+        $this->assertNull($this->cache->get('isMobile')->expiresAt);
+        $this->assertNull($this->cache->get('isMobile')->expiresAfter);
+    }
+
+    public function testGetTtlIsInteger()
+    {
+        $this->cache->set('isMobile', true, 1000);
+        $this->assertInstanceOf(CacheItem::class, $this->cache->get('isMobile'));
+        $this->assertInstanceOf(\DateTime::class, $this->cache->get('isMobile')->expiresAt);
+        $this->assertInstanceOf(\DateInterval::class, $this->cache->get('isMobile')->expiresAfter);
     }
 
     /**
      * @throws CacheException
      */
-    public function testGetTTLNull()
+    public function testGetExpiresAfter()
     {
         $this->cache->set('isMobile', true);
         $this->assertInstanceOf(CacheItem::class, $this->cache->get('isMobile'));
-        $this->assertNull($this->cache->get('isMobile')->getTtl());
+        $this->assertNull($this->cache->get('isMobile')->expiresAfter);
     }
 
     /**

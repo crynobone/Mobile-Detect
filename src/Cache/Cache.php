@@ -2,10 +2,12 @@
 
 namespace Detection\Cache;
 
+use DateTime;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Generic implementation of a cache system using an associative array.
+ * Generic implementation of a Simple Cache system using an associative array.
+ * The cache items are PSR-6 compatible.
  */
 class Cache implements CacheInterface
 {
@@ -47,7 +49,9 @@ class Cache implements CacheInterface
         if (empty($key)) {
             throw new CacheException('Invalid cache key');
         }
-        $item = new CacheItem($key, $value, $ttl);
+        $item = new CacheItem($key, $value);
+        $item->expiresAt($ttl);
+        $item->expiresAfter($ttl);
         $this->cache_db[$key] = $item;
         return true;
     }

@@ -2,6 +2,9 @@
 
 namespace Detection\Cache;
 
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
 use Psr\Cache\CacheItemInterface;
 
 /**
@@ -18,14 +21,23 @@ class CacheItem implements CacheItemInterface
      * @var bool|null Mobile Detect only needs to store booleans (e.g. "isMobile" => true)
      */
     protected bool|null $value = null;
-    protected int|null $ttl = 0;
-    public function __construct($key, $value = null, $ttl = null)
+    /**
+     * @var DateTimeInterface|null
+     */
+    public DateTimeInterface|null $expiresAt = null;
+    /**
+     * @var DateInterval|null
+     */
+    public DateInterval|null $expiresAfter = null;
+
+    public function __construct($key, $value = null, $expiresAt = null, $expiresAfter = null)
     {
         $this->key = $key;
         if (!is_null($value)) {
             $this->value = $value;
         }
-        $this->ttl = $ttl;
+        $this->expiresAt = $expiresAt;
+        $this->expiresAfter = $expiresAfter;
     }
 
     public function getKey(): string
@@ -43,23 +55,47 @@ class CacheItem implements CacheItemInterface
         $this->value = $value;
     }
 
-    public function getTtl(): int|null
+    public function isHit(): bool
     {
-        return $this->ttl;
+        // Item never expires.
+        if ($this->expiresAt === null) {
+            return true;
+        }
+
+        if ($this->expiresAt > new DateTime()) {
+            return true;
+        }
+
+        return false;
     }
 
-    public function isHit()
+    public function expiresAt($expiration): void
     {
-        // TODO: Implement isHit() method.
+        $expiresAt = null;
+
+        if ($expiration instanceof \DateInterval) {
+            $expiresAt = (new DateTime())->add($expiration);
+        } elseif (is_int($expiration)) {
+            if ($expiration > 0) {
+                $expiresAt = new DateTime("{$expiration} seconds");
+            }
+        }
+
+        $this->expiresAt = $expiresAt;
     }
 
-    public function expiresAt($expiration)
+    public function expiresAfter($time): void
     {
-        // TODO: Implement expiresAt() method.
-    }
+        $expiresAfter = null;
 
-    public function expiresAfter($time)
-    {
-        // TODO: Implement expiresAfter() method.
+        if ($time instanceof \DateInterval) {
+            $expiresAfter = $time;
+        } elseif (is_int($time)) {
+            if ($time > 0) {
+                $expiresAfter = new \DateInterval("PT{$time}S");
+            }
+        }
+
+        $this->expiresAfter = $expiresAfter;
     }
 }
