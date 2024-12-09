@@ -129,6 +129,9 @@ final class MobileDetectWithCacheTest extends TestCase
         $detect->isMobile();
     }
 
+    /**
+     * @throws MobileDetectException
+     */
     public function testCustomCacheForConsecutiveCalls()
     {
         $cache = new Cache();
@@ -143,6 +146,9 @@ final class MobileDetectWithCacheTest extends TestCase
         $this->assertCount(1, $cache->getKeys());
     }
 
+    /**
+     * @throws MobileDetectException
+     */
     public function testGetCacheKeyIsUsedInConsecutiveCallsIfFoundIn()
     {
         $cache = $this->getMockBuilder(Cache::class)
@@ -151,11 +157,8 @@ final class MobileDetectWithCacheTest extends TestCase
         $cache->method('get')->withAnyParameters()->willReturn(new CacheItem('name', 'value'));
         $cache->method('set')->withAnyParameters()->willReturn(true);
 
-
         $cache->expects($spy = $this->exactly(2))->method('get');
         $cache->expects($spy = $this->never())->method('set');
-
-
 
         $detect = new MobileDetect($cache);
         $detect->setUserAgent('iPad; AppleWebKit/533.17.9 Version/5.0.2 Mobile/8C148 Safari/6533.18.5');
