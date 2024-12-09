@@ -65,7 +65,7 @@ final class CacheTest extends TestCase
     {
         $this->cache->set('isMobile', true, 1000);
         $this->assertInstanceOf(CacheItem::class, $this->cache->get('isMobile'));
-        $this->assertInstanceOf(\DateTime::class, $this->cache->get('isMobile')->expiresAt);
+        $this->assertNUll($this->cache->get('isMobile')->expiresAt);
         $this->assertInstanceOf(\DateInterval::class, $this->cache->get('isMobile')->expiresAfter);
     }
 
@@ -101,5 +101,63 @@ final class CacheTest extends TestCase
         $this->cache->clear();
         $this->assertNull($this->cache->get('isMobile'));
         $this->assertNull($this->cache->get('isTablet'));
+    }
+
+    /**
+     * @throws CacheException
+     * @throws InvalidArgumentException
+     */
+    public function testGetMultiple(): void
+    {
+        $this->cache->set('isMobile', true, 100);
+        $this->cache->set('isTablet', false, 200);
+
+        $this->assertEquals([
+            'isMobile' => (new CacheItem('isMobile', true))->expiresAfter(100),
+            'isTablet' => (new CacheItem('isTablet', false))->expiresAfter(200),
+            'isUnknown' => null,
+        ],
+            $this->cache->getMultiple(['isMobile', 'isTablet', 'isUnknown'])
+        );
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws CacheException
+     */
+    public function testSetMultiple(): void
+    {
+        $this->cache->setMultiple(['isA' => true, 'isB' => false], 200);
+        $this->assertEquals([
+            'isA' => (new CacheItem('isA', true))->expiresAfter(200),
+            'isB' => (new CacheItem('isB', false))->expiresAfter(200)
+        ], $this->cache->getMultiple(['isA', 'isB']));
+    }
+
+    /**
+     * @throws CacheException
+     * @throws InvalidArgumentException
+     */
+    public function testDeleteMultiple(): void
+    {
+        $this->cache->setMultiple(['isA' => true, 'isB' => false, 'isC' => true], 300);
+
+        $this->cache->deleteMultiple(['isA', 'isB']);
+
+        $this->assertEquals([
+            'isA' => null,
+            'isB' => null,
+            'isC' => (new CacheItem('isC', true))->expiresAfter(300)
+        ], $this->cache->getMultiple(['isA', 'isB', 'isC']));
+    }
+
+    /**
+     * @throws CacheException
+     * @throws InvalidArgumentException
+     */
+    public function testHas(): void
+    {
+        $this->cache->set('isA', true);
+        $this->assertTrue($this->cache->has('isA'));
     }
 }

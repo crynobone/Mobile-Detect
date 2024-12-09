@@ -6,7 +6,7 @@ use DateTime;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Generic implementation of a Simple Cache system using an associative array.
+ * Generic naive implementation of a Simple Cache system using an associative array.
  * The cache items are PSR-6 compatible.
  */
 class Cache implements CacheInterface
@@ -50,7 +50,6 @@ class Cache implements CacheInterface
             throw new CacheException('Invalid cache key');
         }
         $item = new CacheItem($key, $value);
-        $item->expiresAt($ttl);
         $item->expiresAfter($ttl);
         $this->cache_db[$key] = $item;
         return true;
@@ -70,21 +69,22 @@ class Cache implements CacheInterface
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
-        return array_map(function ($key) {
-            return $this->cache_db[$key];
-        }, (array)$keys);
+        return array_reduce((array)$keys, function ($result, $key) {
+            $result[$key] = $this->get($key);
+            return $result;
+        }, []);
     }
 
     /**
-     * @param array<array{key:string, value:string, ttl:int}> $values
+     * @param array<array{key:string, value:string}> $values
      * @param \DateInterval|int|null $ttl
      * @return bool
+     * @throws CacheException
      */
     public function setMultiple(iterable $values, \DateInterval|int|null $ttl = null): bool
     {
-        foreach ($values as $cacheItemArray) {
-            $item = new CacheItem(...$cacheItemArray);
-            $this->cache_db[$cacheItemArray['key']] = $item;
+        foreach ($values as $key => $value) {
+            $this->set($key, $value, $ttl);
         }
         return true;
     }

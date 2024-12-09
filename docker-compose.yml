@@ -2,24 +2,26 @@ services:
   setup:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.setup
 
   runUnitTests:
+    image: alcohol/php:8.3-xdebug
     depends_on:
       setup:
         condition: service_completed_successfully
-    image: php:8.3-rc-alpine3.18
     working_dir: /app
+    environment:
+      XDEBUG_MODE: coverage
     command: >
-      /bin/sh -c "vendor/bin/phpunit -v -c tests/phpunit.xml --coverage-text --strict-coverage --stop-on-risky"
+      /bin/sh -c "vendor/bin/phpunit -v -c tests/phpunit.xml --coverage-html ./coverage --strict-coverage --stop-on-risky"
     volumes:
       - .:/app
 
   runPerfTests:
+    image: php:8.3-rc-alpine3.18
     depends_on:
       setup:
         condition: service_completed_successfully
-    image: php:8.3-rc-alpine3.18
     working_dir: /app
     command: >
       /bin/sh -c "vendor/bin/phpbench run tests/benchmark/MobileDetectBench.php --retry-threshold=1 --iterations=10 --revs=1000 --report=aggregate"
@@ -27,10 +29,10 @@ services:
       - .:/app
 
   runLinting:
+    image: php:8.3-rc-alpine3.18
     depends_on:
       setup:
         condition: service_completed_successfully
-    image: php:8.3-rc-alpine3.18
     working_dir: /app
     command: >
       /bin/sh -c "vendor/bin/phpcs; vendor/bin/phpcbf"
@@ -38,6 +40,7 @@ services:
       - .:/app
 
   generateModel:
+    image: php:8.3-rc-alpine3.18
     depends_on:
       setup:
         condition: service_completed_successfully
@@ -47,7 +50,7 @@ services:
         condition: service_completed_successfully
       runLinting:
         condition: service_completed_successfully
-    image: php:8.3-rc-alpine3.18
+
     working_dir: /app
     command: >
       /bin/sh -c "php ./scripts/export_to_json.php"

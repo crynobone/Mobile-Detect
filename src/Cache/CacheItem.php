@@ -30,61 +30,85 @@ class CacheItem implements CacheItemInterface
      */
     public DateInterval|null $expiresAfter = null;
 
-    public function __construct($key, $value = null, $expiresAt = null, $expiresAfter = null)
+    public function __construct($key, $value = null)
     {
         $this->key = $key;
         if (!is_null($value)) {
             $this->value = $value;
         }
-        $this->expiresAt = $expiresAt;
-        $this->expiresAfter = $expiresAfter;
     }
 
+    /**
+     * @return string
+     */
     public function getKey(): string
     {
         return $this->key;
     }
 
-    public function get(): string|bool
+    /**
+     * @return bool|null
+     */
+    public function get(): ?bool
     {
         return $this->value;
     }
 
-    public function set($value): void
-    {
-        $this->value = $value;
-    }
-
+    /**
+     * @return bool
+     */
     public function isHit(): bool
     {
         // Item never expires.
-        if ($this->expiresAt === null) {
+        if ($this->expiresAt === null && $this->expiresAfter === null) {
             return true;
         }
 
-        if ($this->expiresAt > new DateTime()) {
+        if (!is_null($this->expiresAt) && $this->expiresAt > new DateTime()) {
             return true;
+        }
+
+        if (!is_null($this->expiresAfter)) {
+            try {
+                $future_date = (new DateTime())->add($this->expiresAfter);
+            } catch (\Exception $e) {
+                return false;
+            }
+
+            if ($future_date > new DateTime()) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public function expiresAt($expiration): void
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function set(mixed $value): static
     {
-        $expiresAt = null;
-
-        if ($expiration instanceof \DateInterval) {
-            $expiresAt = (new DateTime())->add($expiration);
-        } elseif (is_int($expiration)) {
-            if ($expiration > 0) {
-                $expiresAt = new DateTime("{$expiration} seconds");
-            }
-        }
-
-        $this->expiresAt = $expiresAt;
+        $this->value = $value;
+        return $this;
     }
 
-    public function expiresAfter($time): void
+    /**
+     * @param \DateTimeInterface|null $expiration
+     * @return $this
+     */
+    public function expiresAt(?\DateTimeInterface $expiration): static
+    {
+        $this->expiresAt = $expiration instanceof \DateTime ? $expiration : null;
+
+        return $this;
+    }
+
+    /**
+     * @param int|\DateInterval|null $time
+     * @return $this
+     */
+    public function expiresAfter(\DateInterval|int|null $time): static
     {
         $expiresAfter = null;
 
@@ -97,5 +121,7 @@ class CacheItem implements CacheItemInterface
         }
 
         $this->expiresAfter = $expiresAfter;
+
+        return $this;
     }
 }
