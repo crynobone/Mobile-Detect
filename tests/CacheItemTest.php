@@ -71,6 +71,4 @@ final class CacheItemTest extends TestCase
 
         $this->assertNull($item->expiresAfter);
     }
-
-
 }

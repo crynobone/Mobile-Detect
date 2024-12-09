@@ -112,11 +112,12 @@ final class CacheTest extends TestCase
         $this->cache->set('isMobile', true, 100);
         $this->cache->set('isTablet', false, 200);
 
-        $this->assertEquals([
+        $this->assertEquals(
+            [
             'isMobile' => (new CacheItem('isMobile', true))->expiresAfter(100),
             'isTablet' => (new CacheItem('isTablet', false))->expiresAfter(200),
             'isUnknown' => null,
-        ],
+            ],
             $this->cache->getMultiple(['isMobile', 'isTablet', 'isUnknown'])
         );
     }
