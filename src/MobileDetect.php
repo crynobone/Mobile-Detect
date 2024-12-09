@@ -30,6 +30,7 @@ use BadMethodCallException;
 use Detection\Cache\Cache;
 use Detection\Cache\CacheException;
 use Detection\Exception\MobileDetectException;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\InvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 
@@ -1409,7 +1410,11 @@ class MobileDetect
             $cacheKey = $this->createCacheKey("mobile");
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem->get();
+                if ($cacheItem instanceof CacheItemInterface) {
+                    return $cacheItem->get();
+                } else {
+                    return $cacheItem;
+                }
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1455,7 +1460,11 @@ class MobileDetect
             $cacheKey = $this->createCacheKey("tablet");
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem->get();
+                if ($cacheItem instanceof CacheItemInterface) {
+                    return $cacheItem->get();
+                } else {
+                    return $cacheItem;
+                }
             }
 
             // Special case: Amazon CloudFront mobile viewer
@@ -1524,7 +1533,11 @@ class MobileDetect
             $cacheKey = $this->createCacheKey($ruleName);
             $cacheItem = $this->cache->get($cacheKey);
             if ($cacheItem !== null) {
-                return $cacheItem->get();
+                if ($cacheItem instanceof CacheItemInterface) {
+                    return $cacheItem->get();
+                } else {
+                    return $cacheItem;
+                }
             }
 
             $result = $this->matchUserAgentWithRule($ruleName);

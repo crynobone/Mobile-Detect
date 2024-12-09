@@ -2,11 +2,13 @@
 
 namespace Detection\Cache;
 
+use Psr\Cache\CacheItemInterface;
+
 /**
  * Simple cache item (key, value, ttl) that is being
  * used by all the detection methods of Mobile Detect class.
  */
-class CacheItem
+class CacheItem implements CacheItemInterface
 {
     /**
      * @var string Unique key for the cache record.
@@ -44,5 +46,20 @@ class CacheItem
     public function getTtl(): int|null
     {
         return $this->ttl;
+    }
+
+    public function isHit()
+    {
+        // TODO: Implement isHit() method.
+    }
+
+    public function expiresAt($expiration)
+    {
+        // TODO: Implement expiresAt() method.
+    }
+
+    public function expiresAfter($time)
+    {
+        // TODO: Implement expiresAfter() method.
     }
 }
